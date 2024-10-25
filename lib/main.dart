@@ -1,38 +1,32 @@
-import 'package:flutter/material.dart';
-import 'package:im_bored/pages/map_page.dart';
+/// The main entry point for the I'm Bored application.
+///
+/// This file sets up the root widget of the application and defines the overall
+/// theme and initial route.
 
+import 'package:flutter/material.dart';
+import 'package:im_bored/pages/splash_screen.dart';
+
+/// The main function that runs the app.
 void main() {
   runApp(const MyApp());
 }
 
+/// The root widget of the application.
+///
+/// This widget sets up the MaterialApp with the app's theme and initial route.
 class MyApp extends StatelessWidget {
+  /// Creates a new instance of [MyApp].
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'I\'m Bored',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.purple,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const MapPage(),
+      home: const SplashScreen(),
     );
   }
 }
