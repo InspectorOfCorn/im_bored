@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:im_bored/pages/profile_page.dart';
 
 /// A page that displays a map and handles location-related functionality.
 ///
@@ -23,6 +24,7 @@ class _MapPageState extends State<MapPage> {
   Set<Marker> _markers = {};
   final Set<Circle> _circles = {};
   final Set<Polygon> _polygons = {};
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -168,6 +170,28 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        // Navigate to ProfilePage
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfilePage()),
+        );
+        break;
+      case 1:
+        // Handle home navigation if needed
+        break;
+      case 2:
+        // Handle chats navigation if needed
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,47 +271,73 @@ class _MapPageState extends State<MapPage> {
           ],
         ),
       ),
-      body: _currentPosition == null
-          ? const Center(child: CircularProgressIndicator())
-          : GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: _currentPosition!,
-                zoom: 17,
-              ),
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
-              markers: _markers,
-              circles: _circles, // Add circles to the map
-              polygons: _polygons, // Add polygons to the map
-              onMapCreated: (GoogleMapController controller) {
-                _controller = controller;
-                _moveCameraToPosition();
-              },
-            ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+      body: Stack(
         children: [
-          FloatingActionButton(
-            onPressed: () {
-              if (_currentPosition != null) {
-                _addCircle(_currentPosition!, 100);
-              }
-            },
-            child: const Icon(Icons.add_circle_outline),
+          _currentPosition == null
+              ? const Center(child: CircularProgressIndicator())
+              : GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: _currentPosition!,
+                    zoom: 17,
+                  ),
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: false,
+                  markers: _markers,
+                  circles: _circles,
+                  polygons: _polygons,
+                  onMapCreated: (GoogleMapController controller) {
+                    _controller = controller;
+                    _moveCameraToPosition();
+                  },
+                ),
+          Positioned(
+            bottom: 80.0, // Adjust this value as needed
+            right: 16.0,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  onPressed: () {
+                    if (_currentPosition != null) {
+                      _addCircle(_currentPosition!, 100);
+                    }
+                  },
+                  child: const Icon(Icons.add_circle_outline),
+                ),
+                const SizedBox(height: 16),
+                FloatingActionButton(
+                  onPressed: () {
+                    if (_currentPosition != null) {
+                      final LatLng p1 = _currentPosition!;
+                      final LatLng p2 =
+                          LatLng(p1.latitude + 0.001, p1.longitude - 0.001);
+                      final LatLng p3 =
+                          LatLng(p1.latitude - 0.001, p1.longitude + 0.001);
+                      _addPolygon([p1, p2, p3]);
+                    }
+                  },
+                  child: const Icon(Icons.add_box_outlined),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 16),
-          FloatingActionButton(
-            onPressed: () {
-              if (_currentPosition != null) {
-                final LatLng p1 = _currentPosition!;
-                final LatLng p2 =
-                    LatLng(p1.latitude + 0.001, p1.longitude - 0.001);
-                final LatLng p3 =
-                    LatLng(p1.latitude - 0.001, p1.longitude + 0.001);
-                _addPolygon([p1, p2, p3]);
-              }
-            },
-            child: const Icon(Icons.add_box_outlined),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            label: 'Chats',
           ),
         ],
       ),
